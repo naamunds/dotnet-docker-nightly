@@ -1,0 +1,20 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# DNX
+project.lock.json
+artifacts/
+
+# stage0 install directory
+.dotnet_stage0/
+
+ # Visual Studio 2015 cache/options directory
+.vs/
+
+# Visual Studio Code cache/options directory
+.vscode/
+
+# User-specific files
+*.suo
+*.user
