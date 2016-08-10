@@ -6,7 +6,8 @@
 
   "dependencies": {
     "Microsoft.NETCore.App": "1.0.0",
-    "Microsoft.DotNet.VersionTools": "1.0.26-prerelease-00708-05"
+    "Microsoft.DotNet.VersionTools": "1.0.26-prerelease-00708-05",
+    "System.Diagnostics.TextWriterTraceListener": "4.0.0"
   },
 
   "frameworks": {

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Dotnet.Docker.Nightly
 {
@@ -21,6 +22,8 @@ namespace Dotnet.Docker.Nightly
 
         public static void Main(string[] args)
         {
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+
             if (ParseArgs(args))
             {
                 DependencyUpdateResults updateResults = UpdateFiles();
