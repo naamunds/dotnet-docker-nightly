@@ -105,7 +105,7 @@ namespace Dotnet.Docker.Nightly
             {
                 Path = path,
                 PackageId = packageId,
-                Regex = new Regex($@"ENV DOTNET_SDK_VERSION (?<version>.*)"),
+                Regex = new Regex($@"ENV DOTNET_SDK_VERSION (?<version>.*)\r?"),
                 VersionGroupName = "version"
             };
         }
