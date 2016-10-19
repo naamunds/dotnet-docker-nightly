@@ -72,11 +72,12 @@ namespace Dotnet.Docker.Nightly
             // This version is infrequently updated, so this is acceptable for now, but once the
             // infrastructure is in place, this app should update the runtime/framework version also.
 
-            IEnumerable<BuildInfo> buildInfos = new[] { BuildInfo.Get("Cli", s_config.CliVersionUrl, fetchLatestReleaseFile: false) };
+            BuildInfo cliBuildInfo = BuildInfo.Get("Cli", s_config.CliVersionUrl, fetchLatestReleaseFile: false);
+            IEnumerable<DependencyBuildInfo> buildInfos = 
+                new[] { new DependencyBuildInfo(cliBuildInfo, true, Enumerable.Empty<string>()) };
             IEnumerable<IDependencyUpdater> updaters = GetUpdaters();
 
-            DependencyUpdater updater = new DependencyUpdater();
-            return updater.Update(updaters, buildInfos);
+            return DependencyUpdateUtils.Update(updaters, buildInfos);
         }
 
         private static Task CreatePullRequest(DependencyUpdateResults updateResults)
@@ -100,17 +101,24 @@ namespace Dotnet.Docker.Nightly
         {
             string branchRoot = Path.Combine(s_repoRoot, s_config.CliBranch.Replace('/', '-'));
             return Directory.GetFiles(branchRoot, "Dockerfile", SearchOption.AllDirectories)
-                .Select(path => CreateRegexUpdater(path, "Microsoft.DotNet.Cli.Utils"));
+                .SelectMany(path => CreateRegexUpdaters(path, "Microsoft.DotNet.Cli.Utils"));
         }
 
-        private static IDependencyUpdater CreateRegexUpdater(string path, string packageId)
+        private static IEnumerable<IDependencyUpdater> CreateRegexUpdaters(string path, string packageId)
         {
-            return new FileRegexPackageUpdater()
+            yield return new FileRegexPackageUpdater()
             {
                 Path = path,
                 PackageId = packageId,
                 Regex = new Regex($@"ENV DOTNET_SDK_VERSION (?<version>[^\r\n]*)"),
                 VersionGroupName = "version"
+            };
+            yield return new FileRegexChecksumUpdater()
+            {
+                Path = path,
+                PackageId = packageId,
+                Regex = new Regex($@"ENV DOTNET_SDK_SHA (?<sha>[^\r\n]*)"),
+                VersionGroupName = "sha"
             };
         }
     }
